@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   
+
+    <title>Triqui</title>
+    <style>
+        button {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            border-block-color: white;  
+            font-size: 50PX;
+                      
+        }
+        body{
+            background-color: black;
+        }
+        h1{
+            color: white;
+            font-size: 150px;
+            text-align: center;
+        }
+        .container{
+            text-align: center;
+        }
+       
+    </style>
+
+    
+</head>
+
+<body>
+    <h1>TRIKI </h1>
+    <div class="container">
+            <button id="0" onclick="console.log(setMove(HUMAN_PLAYER, 0))"></button>
+            <button id="1" onclick="console.log(setMove(HUMAN_PLAYER, 1))"></button>
+            <button id="2" onclick="console.log(setMove(HUMAN_PLAYER, 2))"></button>
+            <br>
+            <button id="3" onclick="console.log(setMove(HUMAN_PLAYER, 3))"></button>
+            <button id="4" onclick="console.log(setMove(HUMAN_PLAYER, 4))"></button>
+            <button id="5" onclick="console.log(setMove(HUMAN_PLAYER, 5))"></button>
+            <br>
+            <button id="6" onclick="console.log(setMove(HUMAN_PLAYER, 6))"></button>
+            <button id="7" onclick="console.log(setMove(HUMAN_PLAYER, 7))"></button>
+            <button id="8" onclick="console.log(setMove(HUMAN_PLAYER, 8))"></button>
+            <br>
+    </div>
+    <script>
+        DifficultyLevel = {
+            Easy: 0,
+            Harder: 1,
+            Expert: 2
+        };
+
+        let mBoard = ['', '', '', '', '', '', '', '', ''];
+        let moves = 0;
+
+        const BOARD_SIZE = 9;
+
+        // Nivel de dificultad actual
+        const mDifficultyLevel = DifficultyLevel.Expert;
+
+        // Representacion de jugadas del jugador en el tablero
+        const HUMAN_PLAYER = 'X';
+        // Representacion de jugadas del computador en el tablero
+        const COMPUTER_PLAYER = 'O';
+        // Representacion de casillas disponibles en el tablero
+        const OPEN_SPOT = '';
+
+        function randomInRange(min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min)
+        }
+
+        function displayBoard() {
+            console.log();
+            console.log(mBoard[0] + " | " + mBoard[1] + " | " + mBoard[2]);
+            console.log("-----------");
+            console.log(mBoard[3] + " | " + mBoard[4] + " | " + mBoard[5]);
+            console.log("-----------");
+            console.log(mBoard[6] + " | " + mBoard[7] + " | " + mBoard[8]);
+            console.log();
+        }
+
+        // clearBoard()
+        // Limpia el tablero
+        function clearBoard() {
+            for (var i = 0; i < BOARD_SIZE; i++) {
+                mBoard[i] = OPEN_SPOT;
+            }
+        }
+
+        // checkForWinner() funcion que retorna Return
+        // 0 si no hay un ganador o empate
+        // 1 si es un empate
+        // 2 si X gano
+        // 3 si O gano
+        function checkForWinner() {
+            for (var i = 0; i <= 6; i += 3) {
+                if (mBoard[i] == HUMAN_PLAYER &&
+                    mBoard[i + 1] == HUMAN_PLAYER &&
+                    mBoard[i + 2] == HUMAN_PLAYER)
+                    return 2;
+
+                if (mBoard[i] == COMPUTER_PLAYER &&
+                    mBoard[i + 1] == COMPUTER_PLAYER &&
+                    mBoard[i + 2] == COMPUTER_PLAYER)
+                    return 3;
+            }
+
+            // Verifica ganador en verticales
+            for (var i = 0; i <= 2; i++) {
+                if (mBoard[i] == HUMAN_PLAYER &&
+                    mBoard[i + 3] == HUMAN_PLAYER &&
+                    mBoard[i + 6] == HUMAN_PLAYER)
+                    return 2;
+
+                if (mBoard[i] == COMPUTER_PLAYER &&
+                    mBoard[i + 3] == COMPUTER_PLAYER &&
+                    mBoard[i + 6] == COMPUTER_PLAYER)
+                    return 3;
+            }
+
+            // Verifica ganador en verticales
+            if ((mBoard[0] == HUMAN_PLAYER &&
+                mBoard[4] == HUMAN_PLAYER &&
+                mBoard[8] == HUMAN_PLAYER) ||
+                (mBoard[2] == HUMAN_PLAYER &&
+                    mBoard[4] == HUMAN_PLAYER &&
+                    mBoard[6] == HUMAN_PLAYER))
+                return 2;
+
+            if ((mBoard[0] == COMPUTER_PLAYER &&
+                mBoard[4] == COMPUTER_PLAYER &&
+                mBoard[8] == COMPUTER_PLAYER) ||
+                (mBoard[2] == COMPUTER_PLAYER &&
+                    mBoard[4] == COMPUTER_PLAYER &&
+                    mBoard[6] == COMPUTER_PLAYER))
+                return 3;
+
+            // Verifica si hay empate
+            for (var i = 0; i < BOARD_SIZE; i++) {
+                // Si hay una casilla sin movimiento ni humano ni del computador aun no hay ganador ni empate
+                if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER)
+                    return 0;
+            }
+
+            // Si ningun caso anterior se presenta, entonces es un empate
+            return 1;
+        }
+
+        // getComputerMove(). Retorna
+        // Se obtiene la casilla donde jugara el computador dependiendo de la dificultad
+        function getComputerMove() {
+            if(moves === 9) return;
+            var move;
+            //Si la dificultad es facil
+            if (mDifficultyLevel == DifficultyLevel.Easy) {
+                //Se calcula un movimiento aleatorio disponible
+                do {
+                    move = randomInRange(0, 8);
+                } while (mBoard[move] == HUMAN_PLAYER || mBoard[move] == COMPUTER_PLAYER);
+                //Si la dificultad es dificil
+            } else if (mDifficultyLevel == DifficultyLevel.Harder) {
+                // Se evalua si hay un movimiento para que el computador gane
+                for (var i = 0; i < BOARD_SIZE; i++) {
+                    if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
+                        var curr = mBoard[i];
+                        mBoard[i] = COMPUTER_PLAYER;
+                        if (checkForWinner() == 3) {
+                            mBoard[i] = OPEN_SPOT;
+                            console.log("Computer is moving to " + (i + 1));
+                            return i;
+                        }
+                        else
+                            mBoard[i] = curr;
+                    }
+                }
+
+                // De lo contrario de genera un movimiento aleatorio
+                do {
+                    move = randomInRange(0, 8);
+                } while (mBoard[move] == HUMAN_PLAYER || mBoard[move] == COMPUTER_PLAYER);
+                //Si la dificultad es experto
+            } else {
+                // Se evalua si hay un movimiento para que el computador gane
+                for (var i = 0; i < BOARD_SIZE; i++) {
+                    if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
+                        var curr = mBoard[i];
+                        mBoard[i] = COMPUTER_PLAYER;
+                        if (checkForWinner() == 3) {
+                            mBoard[i] = OPEN_SPOT;
+                            console.log(setMove(COMPUTER_PLAYER, i));
+                            console.log("Computer is moving to " + (i + 1));
+                            return i;
+                        }
+                        else {
+                            mBoard[i] = curr;
+                        }
+                    }
+                }
+
+                // Se evalua si hay un movimiento del computador para evitar que el humano gane
+                for (var i = 0; i < BOARD_SIZE; i++) {
+                    if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
+                        var curr = mBoard[i]; // Save the current number
+                        mBoard[i] = HUMAN_PLAYER;
+                        if (checkForWinner() == 2) {
+                            mBoard[i] = OPEN_SPOT;
+                            console.log(setMove(COMPUTER_PLAYER, i));
+                            console.log("Computer is moving to " + (i + 1));
+                            return i;
+                        }
+                        else
+                            mBoard[i] = curr;
+                    }
+                }
+
+                //De lo contrario genera un movimiento aleatorio disponible
+                do {
+                    move = randomInRange(0, 8);
+                } while (mBoard[move] == HUMAN_PLAYER || mBoard[move] == COMPUTER_PLAYER);
+            }
+
+            console.log("Computer is moving to " + (move + 1));
+            setMove(COMPUTER_PLAYER, move);
+            return move;
+        }
+
+        // setMove()
+        // Guarda en el tablero un movimiento de un jugador(Humano/computador) en una
+        // posicion determinada
+        // Retorna falso si la casilla esta ocupada, de lo contrario retorna verdadero
+        function setMove(player, location) {
+            if (mBoard[location] == OPEN_SPOT) {
+                moves++;
+                if (player == HUMAN_PLAYER) {
+                    mBoard[location] = HUMAN_PLAYER;
+                    if(checkForWinner() === 2) {
+                        alert('Felicitaciones, ganaste');
+                        var buttons = document.getElementsByTagName('button');
+                        for(var i = 0; i < buttons.length; i++) {
+                            buttons[i].disabled = true;
+                        }
+                    }
+                    getComputerMove();
+                    if(checkForWinner() === 3) {
+                        alert('Lo sentimos, has perdido');
+                        var buttons = document.getElementsByTagName('button');
+                        for(var i = 0; i < buttons.length; i++) {
+                            buttons[i].disabled = true;
+                        }
+                    }
+                    else if(moves === 9){
+                        alert('Empate!!');
+                    }
+                } else {
+                    mBoard[location] = COMPUTER_PLAYER;
+                }
+                document.getElementById(location).innerHTML = player;
+                document.getElementById(location).disabled = true;
+                displayBoard();
+                return true;
+            }
+            return false;
+        }
+    </script>
+</body>
+
+</html>
