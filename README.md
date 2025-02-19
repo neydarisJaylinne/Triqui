@@ -23,7 +23,7 @@ Este es un juego de Triqui (Tic-Tac-Toe) implementado en HTML, CSS y JavaScript.
 ## Instalación
 1. Clona este repositorio:
    ```sh
-   git clone https://github.com/tu-usuario/triqui.git
+   git clone https://github.com/neydarisJaylinne/Triqui
    ```
 2. Abre el archivo `index.html` en tu navegador.
 
